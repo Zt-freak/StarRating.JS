@@ -37,8 +37,8 @@ class StarConfig {
     constructor (
         starWidth = 30,
         starHeight = 30,
-        colorFilled = "#FFF",
-        colorEmpty = "#000",
+        colorFilled = 'gold',
+        colorEmpty = '#000',
         starPathType = 'polygon',
         starPath = '5,0.2 8.1,9.8 0,3.9 10,3.9 1.9,9.8',
         id = (Math.random() + 1).toString(36).substring(7)
@@ -47,9 +47,9 @@ class StarConfig {
         this.starHeight = starHeight;
         this.colorFilled = colorFilled;
         this.colorEmpty =  colorEmpty;
-        this.starPath = starPath,
-        this.starPathType = starPathType
-        this.id = id
+        this.starPath = starPath;
+        this.starPathType = starPathType;
+        this.id = id;
     }
 }
 

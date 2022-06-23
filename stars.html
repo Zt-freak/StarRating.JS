@@ -4,71 +4,164 @@
     <link rel="stylesheet" href="stars.css">
 </head>
 <body>
+    <style>
+        * {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;*/
+        }
+
+        .codeblock {
+            background-color: #222;
+            color: #FFF;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .star-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            width: fit-content;
+            min-width: 30px;
+            min-height: 30px;
+        }
+    </style>
+    <h1>StarRating.JS</h1>
+    <p>StarRating.JS is a SVG-based JavaScript library for rendering star ratings on your website.</p>
+    <h2>Example usage</h2>
     <p>Get data via DOM input</p>
     <div id="stars" class="star-container"></div>
     <div>
-        <input type="range" min="0" max="10" step="0.01" id="rangeselect">
+        <input type="range" value="0" min="0" max="5" style="width:500px;" step="0.01" id="rangeselect">
     </div>
-    <p>Get data via fetch</p>
+    <div class="codeblock">
+        const config = new StarConfig();<br/>
+        <br/>
+        document.getElementById('rangeselect').addEventListener('input', function (e) {<br/>
+        &nbsp;&nbsp;const theStars = new StarContainer(document.getElementById('stars'), config);<br/>
+        &nbsp;&nbsp;theStars.render(new StarData (e.target.value, 5));<br/>
+        });
+    </div>
+    <p>Get data via REST</p>
     <div id="stars2" class="star-container"></div>
     <div>
-        <button id="requestButton" style="margin-top:5px;">fetch</button>
+        <button id="requestButton" style="margin:5px 0;">fetch</button>
+    </div>
+    <div class="codeblock">
+        const config = new StarConfig();<br/>
+        <br/>
+        document.getElementById('requestButton').addEventListener('click', function (e) {<br/>
+        &nbsp;&nbsp;fetch('./stars.json')<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;.then(response => response.json())<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;.then(data => {<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const theStars = new StarContainer(document.getElementById('stars2'), config);<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;theStars.render(data);<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;});<br/>
+        });
     </div>
     <p>Custom stars</p>
     <div id="stars3" class="star-container"></div>
-    <p>Selectable value</p>
-    <div id="stars4" class="star-container"></div>
+    <div id="stars5" class="star-container"></div>
+    <div class="codeblock">
+        const customConfig = new StarConfig(<br/>
+        &nbsp;&nbsp;30,<br/>
+        &nbsp;&nbsp;30,<br/>
+        &nbsp;&nbsp;'green',<br/>
+        &nbsp;&nbsp;'red',<br/>
+        &nbsp;&nbsp;'polygon',<br/>
+        &nbsp;&nbsp;'10,1.5 8.5,0 5,3.5 1.5,0 0,1.5 3.5,5 0,8.5 1.5,10 5,6.5 8.5,10 10,8.5 6.5,5'<br/>
+        );<br/>
+        const customStars = new StarContainer(document.getElementById('stars3'), customConfig);<br/>
+        customStars.render(new StarData (2.62, 5));<br/>
+    </div>
+    <p>SVG data from file</p>
+    <div id="stars6" class="star-container"></div>
+    <div class="codeblock">
+        fetch('http://example.com/star.svg')<br/>
+        &nbsp;&nbsp;.then(response => response.text())<br/>
+        &nbsp;&nbsp;.then(str => new window.DOMParser().parseFromString(str, "text/xml"))<br/>
+        &nbsp;&nbsp;.then(data => data.getElementsByTagName('g')[0].firstElementChild.getAttribute('d'))<br/>
+        &nbsp;&nbsp;.then(data => {<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;console.log(data);<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;const fileConfig = new StarConfig(<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;30,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;30,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'green',<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'black',<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'path',<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;);<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;const fileStars = new StarContainer(document.getElementById('stars6'), fileConfig);<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;fileStars.render(new StarData (3.5, 5));<br/>
+        &nbsp;&nbsp;});
+    </div>
+
 
     <script src="stars.js"></script>
     <script defer>
-        /* Usage */
-
         const config = new StarConfig();
 
         // DOM input
+        const theStars = new StarContainer(document.getElementById('stars'), config);
+        theStars.render(new StarData (0, 5));
         document.getElementById('rangeselect').addEventListener('input', function (e) {
-            const theStars = new StarContainer(document.getElementById('stars'), config);
-            theStars.render(new StarData (e.target.value, 10));
+            theStars.render(new StarData (e.target.value, 5));
         });
 
         // JSON response
+        const theStars2 = new StarContainer(document.getElementById('stars2'), config);
+        theStars2.render(new StarData (0, 5));
         document.getElementById('requestButton').addEventListener('click', function (e) {
             fetch('./stars.json')
                 .then(response => response.json())
                 .then(data => {
-                    const theStars = new StarContainer(document.getElementById('stars2'), config);
-                    theStars.render(data);
+                    theStars2.render(data);
                 });
         });
 
         // custom stars
         const customConfig = new StarConfig(
-            30,
-            30,
-            'gold',
+            20,
+            20,
+            'green',
             'red',
             'polygon',
             '10,1.5 8.5,0 5,3.5 1.5,0 0,1.5 3.5,5 0,8.5 1.5,10 5,6.5 8.5,10 10,8.5 6.5,5'
         );
         const customStars = new StarContainer(document.getElementById('stars3'), customConfig);
-        customStars.render(new StarData (2.62, 6));
-
-        // Selectable value
+        customStars.render(new StarData (2.62, 5));
         const customConfig2 = new StarConfig(
-            30,
-            30,
+            35,
+            36,
             'pink',
-            'blue',
+            'cyan',
             'path',
             'M9.1,1.3C8,0.1,6.1,0.1,5,1.3c-1.1-1.1-3-1.1-4.1,0c-1.1,1.1-1.1,3,0,4.1L5,9.6l4.1-4.1, C10.3,4.3,10.3,2.4,9.1,1.3z'
         );
-        const customStars2 = new StarContainer(document.getElementById('stars4'), customConfig2);
-        customStars2.render(new StarData (3, 6));
-        document.getElementById('stars4').addEventListener('click', function(e) {
-            if (e.target.dataset.index == null || e.target.dataset.index == undefined)
-                return;
-            customStars2.render(new StarData (parseInt(e.target.dataset.index) + 1, 6));
-        });
+        const customStars2 = new StarContainer(document.getElementById('stars5'), customConfig2);
+        customStars2.render(new StarData (Math.PI, 5));
+
+        // star from svg file
+
+        fetch('http://localhost:8074/stars/test.svg')
+            .then(response => response.text())
+            .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+            .then(data => data.getElementsByTagName('g')[0].firstElementChild.getAttribute('d'))
+            .then(data => {
+                console.log(data);
+                const fileConfig = new StarConfig(
+                    30,
+                    30,
+                    'green',
+                    'black',
+                    'path',
+                    data
+                );
+                const fileStars = new StarContainer(document.getElementById('stars6'), fileConfig);
+                fileStars.render(new StarData (3.5, 5));
+            });
+        
     </script>
 </body>
 </html>
